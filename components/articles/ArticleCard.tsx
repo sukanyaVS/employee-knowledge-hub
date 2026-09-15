@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BookmarkButton from "./BookmarkButton";
 
 type ArticleCardProps = {
   article: {
@@ -57,6 +58,10 @@ export default function ArticleCard({
       >
         Read More →
       </Link>
+
+      <div className="mt-4">
+  <BookmarkButton articleId={article.id} />
+</div>
     </article>
   );
 }
