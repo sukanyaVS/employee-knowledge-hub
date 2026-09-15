@@ -15,6 +15,9 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Admin Authentication
+
+Set `AUTH_SECRET` in `.env` to a long random value. Run the seed command to create the development admin account, then sign in at `/login` with the seeded admin credentials. The `/admin` routes and article mutations require an authenticated user with the `ADMIN` role.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

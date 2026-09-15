@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/auth";
 
 type ArticleRouteContext = {
   params: Promise<{
@@ -79,6 +80,7 @@ export async function PUT(
   { params }: ArticleRouteContext
 ) {
   try {
+    await requireAdmin();
     const { id } = await params;
 
     const articleId = Number(id);
@@ -177,6 +179,7 @@ export async function DELETE(
   { params }: ArticleRouteContext
 ) {
   try {
+    await requireAdmin();
     const { id } = await params;
 
     const articleId = Number(id);
