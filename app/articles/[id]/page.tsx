@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { getPublishedArticle } from "@/lib/articles";
 import BookmarkButton from "@/components/articles/BookmarkButton";
 
@@ -8,6 +9,37 @@ type ArticlePageProps = {
     id: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: ArticlePageProps): Promise<Metadata> {
+  const { id } = await params;
+  const articleId = Number(id);
+
+  if (!Number.isInteger(articleId)) {
+    return {};
+  }
+
+  const article = await getPublishedArticle(articleId);
+
+  if (!article) {
+    return {};
+  }
+
+  return {
+    title: `${article.title} | Employee Knowledge Hub`,
+    description: article.description,
+    openGraph: {
+      title: article.title,
+      description: article.description,
+      type: "article",
+      publishedTime: article.publishedAt
+        ? new Date(article.publishedAt).toISOString()
+        : undefined,
+      authors: [article.author.name],
+    },
+  };
+}
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { id } = await params;
