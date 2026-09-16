@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getPublishedArticles } from "@/lib/articles";
 import ArticleCard from "@/components/articles/ArticleCard";
 import ArticleFilters from "@/components/articles/ArticleFilters";
 import Link from "next/link";
@@ -36,86 +36,14 @@ export default async function ArticlesPage({
     ? Number(author)
     : undefined;
 
-  const where = {
-    published: true,
-
-    ...(search
-      ? {
-          OR: [
-            {
-              title: {
-                contains: search,
-              },
-            },
-            {
-              description: {
-                contains: search,
-              },
-            },
-            {
-              content: {
-                contains: search,
-              },
-            },
-          ],
-        }
-      : {}),
-
-    ...(categoryId
-      ? {
-          categoryId,
-        }
-      : {}),
-
-    ...(authorId
-      ? {
-          authorId,
-        }
-      : {}),
-  };
-
   const [articles, totalArticles, categories, authors] =
-    await Promise.all([
-      prisma.article.findMany({
-        where,
-        include: {
-          category: true,
-          author: true,
-        },
-        orderBy: {
-          publishedAt: "desc",
-        },
-        skip: (currentPage - 1) * PAGE_SIZE,
-        take: PAGE_SIZE,
-      }),
-
-      prisma.article.count({
-        where,
-      }),
-
-      prisma.category.findMany({
-        orderBy: {
-          name: "asc",
-        },
-      }),
-
-      prisma.user.findMany({
-        where: {
-          articles: {
-            some: {
-              published: true,
-            },
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-        },
-        orderBy: {
-          name: "asc",
-        },
-      }),
-    ]);
+    await getPublishedArticles(
+      search,
+      categoryId,
+      authorId,
+      currentPage,
+      PAGE_SIZE
+    );
 
   const totalPages = Math.ceil(
     totalArticles / PAGE_SIZE

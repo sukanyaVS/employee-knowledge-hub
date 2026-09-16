@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { getPublishedArticle } from "@/lib/articles";
 import BookmarkButton from "@/components/articles/BookmarkButton";
 
 type ArticlePageProps = {
@@ -17,16 +17,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     notFound();
   }
 
-  const article = await prisma.article.findFirst({
-    where: {
-      id: articleId,
-      published: true,
-    },
-    include: {
-      category: true,
-      author: true,
-    },
-  });
+  const article = await getPublishedArticle(articleId);
 
   if (!article) {
     notFound();
